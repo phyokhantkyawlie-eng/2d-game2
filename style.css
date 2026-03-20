@@ -1,0 +1,396 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Courier New', monospace;
+}
+
+/* =====================
+   GAME WORLD
+   ===================== */
+#game {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+/* Animated grass base */
+.bg-grass {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, #2d5a27 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, #3a6b2e 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #254d20 0%, transparent 60%),
+    radial-gradient(ellipse at 10% 80%, #2a5224 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 20%, #316128 0%, transparent 40%),
+    #2a5220;
+  animation: grassSway 8s ease-in-out infinite alternate;
+}
+
+@keyframes grassSway {
+  0%   { filter: brightness(1) hue-rotate(0deg); }
+  50%  { filter: brightness(1.05) hue-rotate(3deg); }
+  100% { filter: brightness(0.97) hue-rotate(-2deg); }
+}
+
+/* Subtle tile pattern overlay */
+.bg-detail {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(0,0,0,0.04) 39px,
+      rgba(0,0,0,0.04) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(0,0,0,0.04) 39px,
+      rgba(0,0,0,0.04) 40px
+    );
+  pointer-events: none;
+}
+
+/* =====================
+   WATER OBSTACLES
+   ===================== */
+.water {
+  position: absolute;
+  border-radius: 50% / 40%;
+  background:
+    radial-gradient(ellipse at 30% 30%, #7ecef4 0%, #2196f3 40%, #1565c0 100%);
+  box-shadow:
+    0 0 20px rgba(33, 150, 243, 0.5),
+    inset 0 2px 8px rgba(255,255,255,0.3),
+    inset 0 -4px 12px rgba(0,0,80,0.3);
+  overflow: hidden;
+  animation: waterPulse 3s ease-in-out infinite alternate;
+}
+
+.water::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: -50%;
+  width: 200%;
+  height: 30%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  animation: waterShimmer 2.5s ease-in-out infinite alternate;
+}
+
+.water::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -80%;
+  width: 260%;
+  height: 20%;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  animation: waterShimmer 3.5s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes waterPulse {
+  0%   { box-shadow: 0 0 15px rgba(33,150,243,0.4), inset 0 2px 8px rgba(255,255,255,0.3); filter: brightness(1); }
+  100% { box-shadow: 0 0 30px rgba(33,150,243,0.7), inset 0 2px 8px rgba(255,255,255,0.4); filter: brightness(1.08); }
+}
+
+@keyframes waterShimmer {
+  0%   { transform: translateX(0) scaleX(1); opacity: 0.6; }
+  100% { transform: translateX(10%) scaleX(1.1); opacity: 1; }
+}
+
+#water1 { width: 220px; height: 110px; left: 15%; top: 20%; }
+#water2 { width: 180px; height: 90px;  right: 12%; top: 55%; }
+#water3 { width: 260px; height: 100px; left: 38%; bottom: 10%; }
+
+/* =====================
+   ROCK OBSTACLES
+   ===================== */
+.rock {
+  position: absolute;
+  background:
+    radial-gradient(ellipse at 35% 25%, #9e9e9e, #5a5a5a 60%, #3a3a3a 100%);
+  border-radius: 40% 55% 45% 60% / 55% 45% 60% 40%;
+  box-shadow:
+    4px 6px 12px rgba(0,0,0,0.5),
+    inset -3px -4px 8px rgba(0,0,0,0.4),
+    inset 2px 2px 6px rgba(255,255,255,0.1);
+  animation: rockBob 6s ease-in-out infinite alternate;
+}
+
+.rock::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 15%;
+  width: 30%;
+  height: 15%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+@keyframes rockBob {
+  0%   { transform: translateY(0px); }
+  100% { transform: translateY(2px); }
+}
+
+#rock1 { width: 70px;  height: 55px;  left: 60%;  top: 18%; }
+#rock2 { width: 55px;  height: 45px;  left: 28%;  top: 65%; }
+#rock3 { width: 80px;  height: 60px;  right: 25%; top: 30%; }
+#rock4 { width: 50px;  height: 40px;  left: 72%;  bottom: 28%; }
+
+/* =====================
+   TREES (impassable)
+   ===================== */
+.tree {
+  position: absolute;
+  width: 50px;
+  height: 60px;
+}
+
+.tree::before {
+  /* trunk */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 22px;
+  background: linear-gradient(to right, #5d3a1a, #8b5e3c, #5d3a1a);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+
+.tree::after {
+  /* canopy */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background:
+    radial-gradient(ellipse at 40% 35%, #5cb85c, #2e7d32 55%, #1b5e20 100%);
+  border-radius: 50% 50% 45% 45%;
+  box-shadow:
+    2px 4px 10px rgba(0,0,0,0.4),
+    inset -4px -4px 10px rgba(0,0,0,0.2),
+    inset 3px 3px 8px rgba(255,255,255,0.1);
+  animation: treeSway 4s ease-in-out infinite alternate;
+}
+
+@keyframes treeSway {
+  0%   { transform: translateX(-50%) rotate(-1.5deg); }
+  100% { transform: translateX(-50%) rotate(1.5deg); }
+}
+
+#tree1 { left: 5%;   top: 5%; }
+#tree2 { left: 45%;  top: 8%; }
+#tree3 { right: 5%;  top: 5%; }
+#tree4 { left: 5%;   bottom: 8%; }
+#tree5 { right: 5%;  bottom: 8%; }
+#tree6 { left: 82%;  top: 48%; }
+
+/* =====================
+   PLAYER
+   ===================== */
+#player {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  background-image: url("image.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 10;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+  transition: filter 0.1s;
+}
+
+/* =====================
+   ENEMIES
+   ===================== */
+.enemy {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  background-image: url("image2.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 9;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+}
+
+/* =====================
+   BULLETS
+   ===================== */
+.bullet {
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #fff 0%, #ffe600 50%, #ff8800 100%);
+  position: absolute;
+  border-radius: 50%;
+  z-index: 11;
+  box-shadow: 0 0 6px 2px rgba(255, 200, 0, 0.7);
+}
+
+/* =====================
+   HUD
+   ===================== */
+#hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+#hp-display,
+#wave-display {
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+#controls-hint {
+  background: rgba(0,0,0,0.35);
+  color: rgba(255,255,255,0.55);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* =====================
+   MOBILE CONTROLS
+   ===================== */
+#mobile-controls {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 200;
+}
+
+@media (pointer: coarse) {
+  #mobile-controls { display: block; }
+  #controls-hint   { display: none; }
+}
+
+#joystick-zone {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+#joystick-base {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+#joystick-knob {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9), rgba(180,220,255,0.6));
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5), 0 0 12px rgba(100,200,255,0.4);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+#ability-btn {
+  position: absolute;
+  bottom: 175px;
+  left: 57px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff6b35, #c0392b);
+  border: 2px solid rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 18px rgba(255,80,30,0.6), 0 4px 12px rgba(0,0,0,0.5);
+  pointer-events: all;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+#ability-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 0 30px rgba(255,80,30,0.9), 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* =====================
+   AMBIENT PARTICLES
+   ===================== */
+@keyframes floatParticle {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  20%  { opacity: 0.7; }
+  80%  { opacity: 0.5; }
+  100% { transform: translateY(-80px) translateX(30px) scale(0.5); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(180, 255, 120, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatParticle linear infinite;
+  z-index: 2;
+}
