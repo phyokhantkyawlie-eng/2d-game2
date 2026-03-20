@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game">
+    <!-- Animated background layers -->
+    <div class="bg-grass"></div>
+    <div class="bg-detail"></div>
+
+    <!-- Water obstacles -->
+    <div class="water" id="water1"></div>
+    <div class="water" id="water2"></div>
+    <div class="water" id="water3"></div>
+
+    <!-- Rock obstacles -->
+    <div class="rock" id="rock1"></div>
+    <div class="rock" id="rock2"></div>
+    <div class="rock" id="rock3"></div>
+    <div class="rock" id="rock4"></div>
+
+    <!-- Trees (decorative + impassable) -->
+    <div class="tree" id="tree1"></div>
+    <div class="tree" id="tree2"></div>
+    <div class="tree" id="tree3"></div>
+    <div class="tree" id="tree4"></div>
+    <div class="tree" id="tree5"></div>
+    <div class="tree" id="tree6"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div id="hp-display">❤️ <span id="hp-val">3</span></div>
+      <div id="wave-display">WAVE <span id="wave-val">1</span></div>
+      <div id="controls-hint">WASD move · Click shoot · E = 360°</div>
+    </div>
+
+    <div id="player"></div>
+
+    <!-- Mobile Controls -->
+    <div id="mobile-controls">
+      <div id="ability-btn">💥</div>
+      <div id="joystick-zone">
+        <div id="joystick-base">
+          <div id="joystick-knob"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
